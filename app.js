@@ -365,3 +365,4 @@ const base = existing || {id: newId, created_at: nowIso()};
 
   await renderPage(initial);
 })();
+})();
