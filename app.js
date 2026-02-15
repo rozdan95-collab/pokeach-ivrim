@@ -1,11 +1,7 @@
 
 (() => {
-const KEY="daniel_word_notes_draft_v1";   // local drafts
-const PUBLISHED_URL="annotations.json";   // committed to GitHub Pages
-
- const BASE = new URL('.', window.location.href).href;
-const withBase = (p) => (p.startsWith('http') ? p : BASE + p.replace(/^\.?\//,''));
-   //
+  const KEY="daniel_word_notes_draft_v1";   // local drafts
+  const PUBLISHED_URL="annotations.json";   // committed to GitHub Pages
 
   const img=document.getElementById("pageImg");
   const wrap=document.getElementById("pageWrap");
@@ -130,25 +126,24 @@ const withBase = (p) => (p.startsWith('http') ? p : BASE + p.replace(/^\.?\//,''
   }
 
   async function loadMeta(){
-   const res = await fetch(withBase("meta.json"), {cache:"no-store"});
+    const res = await fetch("meta.json", {cache:"no-store"});
     META = await res.json();
     document.getElementById("pageCount").textContent = META.page_count;
     pageInput.max = META.page_count;
-  
-async function loadPublished(){
-  try{
-    const res = await fetch(withBase(PUBLISHED_URL), {cache:"no-store"});
-    if(!res.ok) throw new Error("no published");
-    const arr = await res.json();
-    publishedNotes = Array.isArray(arr) ? arr : [];
-    document.getElementById("pubStatus").textContent = `נטענו ${publishedNotes.length} הערות מהאתר`;
-  }catch(e){
-    publishedNotes = [];
-    document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
   }
-}
 
- 
+  async function loadPublished(){
+    try{
+      const res = await fetch(PUBLISHED_URL, {cache:"no-store"});
+      if(!res.ok) throw new Error("no published");
+      const arr = await res.json();
+      publishedNotes = Array.isArray(arr) ? arr : [];
+      document.getElementById("pubStatus").textContent = `נטענו ${publishedNotes.length} הערות מהאתר`;
+    }catch(e){
+      publishedNotes = [];
+      document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
+    }
+  }
 
   function clearWords(){
     wordEls.forEach(el=>el.remove());
@@ -166,11 +161,9 @@ async function loadPublished(){
       history.replaceState(null, "", u.toString());
     }catch(e){}
 
-const p = META.pages[currentPage-1];
-img.src = withBase(p.img);
 
-    
-
+    const p = META.pages[currentPage-1];
+    img.src = p.img;
 
     await new Promise(resolve=>{
       if(img.complete) return resolve();
@@ -178,8 +171,7 @@ img.src = withBase(p.img);
       img.onerror=()=>resolve();
     });
 
-    const wordsRes = await fetch(withBase(p.words), {cache:"no-store"});
-
+    const wordsRes = await fetch(p.words, {cache:"no-store"});
     const payload = await wordsRes.json();
 
     clearWords();
@@ -224,9 +216,7 @@ img.src = withBase(p.img);
             map.delete(key);
           }else{
             const existing = map.get(key);
-          const newId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2));
-const base = existing || {id: newId, created_at: nowIso()};
-
+            const base = existing || {id: crypto.randomUUID(), created_at: nowIso()};
             map.set(key, {
               ...base,
               page: currentPage,
@@ -339,30 +329,26 @@ const base = existing || {id: newId, created_at: nowIso()};
       applyMarks(); renderSidebar();
     }
   });
-// init
-(async ()=>{
-  await loadMeta();
-  await loadPublished();
 
-  // In read mode: hide import/clear buttons to reduce confusion
-  if(!EDIT_MODE){
-    document.getElementById("editHint").textContent =
-      "כדי לערוך הערות: הוסף ‎?edit=1‎ לכתובת (רק למנהל).";
-    document.getElementById("btnImport").style.display="none";
-    document.getElementById("btnClear").style.display="none";
-  }else{
-    document.getElementById("editHint").textContent =
-      "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל-GitHub.";
-  }
-
-  // open directly on ?page=N if provided
-  let initial = 1;
-  try{
-    const u = new URL(window.location.href);
-    const p = parseInt(u.searchParams.get("page") || "1", 10);
-    if(p && p >= 1) initial = p;
-  }catch(e){}
-
-  await renderPage(initial);
-})();
+  // init
+  (async ()=>{
+    await loadMeta();
+    await loadPublished();
+    // In read mode: hide import/clear buttons to reduce confusion
+    if(!EDIT_MODE){
+      document.getElementById("editHint").textContent = "כדי לערוך הערות: הוסף ‎?edit=1‎ לכתובת (רק למנהל).";
+      document.getElementById("btnImport").style.display="none";
+      document.getElementById("btnClear").style.display="none";
+    }else{
+      document.getElementById("editHint").textContent = "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל‑GitHub.";
+    }
+    // open directly on ?page=N if provided
+    let initial = 1;
+    try{
+      const u = new URL(window.location.href);
+      const p = parseInt(u.searchParams.get("page")||"1", 10);
+      if(p && p>=1) initial = p;
+    }catch(e){}
+    await renderPage(initial);
+  })();
 })();
