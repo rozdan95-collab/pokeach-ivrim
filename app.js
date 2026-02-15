@@ -339,7 +339,6 @@ const base = existing || {id: newId, created_at: nowIso()};
       applyMarks(); renderSidebar();
     }
   });
-
   // init
   (async ()=>{
     await loadMeta();
@@ -350,7 +349,7 @@ const base = existing || {id: newId, created_at: nowIso()};
       document.getElementById("btnImport").style.display="none";
       document.getElementById("btnClear").style.display="none";
     }else{
-      document.getElementById("editHint").textContent = "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל‑GitHub.";
+      document.getElementById("editHint").textContent = "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל-GitHub.";
     }
     // open directly on ?page=N if provided
     let initial = 1;
@@ -362,6 +361,3 @@ const base = existing || {id: newId, created_at: nowIso()};
     await renderPage(initial);
   })();
 })();
-
-
-
