@@ -330,25 +330,30 @@
     }
   });
 
-  // init
-  (async ()=>{
-    await loadMeta();
-    await loadPublished();
-    // In read mode: hide import/clear buttons to reduce confusion
-    if(!EDIT_MODE){
-      document.getElementById("editHint").textContent = "כדי לערוך הערות: הוסף ‎?edit=1‎ לכתובת (רק למנהל).";
-      document.getElementById("btnImport").style.display="none";
-      document.getElementById("btnClear").style.display="none";
-    }else{
-      document.getElementById("editHint").textContent = "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל‑GitHub.";
-    }
-    // open directly on ?page=N if provided
-    let initial = 1;
-    try{
-      const u = new URL(window.location.href);
-      const p = parseInt(u.searchParams.get("page")||"1", 10);
-      if(p && p>=1) initial = p;
-    }catch(e){}
-    await renderPage(initial);
-  })();
+// init
+(async ()=>{
+  await loadMeta();
+  await loadPublished();
+
+  // In read mode: hide import/clear buttons to reduce confusion
+  if(!EDIT_MODE){
+    document.getElementById("editHint").textContent =
+      "כדי לערוך הערות: הוסף ‎?edit=1‎ לכתובת (רק למנהל).";
+    document.getElementById("btnImport").style.display="none";
+    document.getElementById("btnClear").style.display="none";
+  }else{
+    document.getElementById("editHint").textContent =
+      "מצב עריכה פעיל. העריכות נשמרות כטיוטה בדפדפן עד שתייצא ותעלה ל-GitHub.";
+  }
+
+  // open directly on ?page=N if provided
+  let initial = 1;
+  try{
+    const u = new URL(window.location.href);
+    const p = parseInt(u.searchParams.get("page") || "1", 10);
+    if(p && p >= 1) initial = p;
+  }catch(e){}
+
+  await renderPage(initial);
+})();
 })();
