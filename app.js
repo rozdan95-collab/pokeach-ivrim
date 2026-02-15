@@ -1,7 +1,11 @@
 
 (() => {
-  const KEY="daniel_word_notes_draft_v1";   // local drafts
-  const PUBLISHED_URL="annotations.json";   // committed to GitHub Pages
+const KEY="daniel_word_notes_draft_v1";   // local drafts
+const PUBLISHED_URL="annotations.json";   // committed to GitHub Pages
+
+ const BASE = new URL('.', window.location.href).href;
+const withBase = (p) => (p.startsWith('http') ? p : BASE + p.replace(/^\.?\//,''));
+   //
 
   const img=document.getElementById("pageImg");
   const wrap=document.getElementById("pageWrap");
@@ -130,20 +134,20 @@
     META = await res.json();
     document.getElementById("pageCount").textContent = META.page_count;
     pageInput.max = META.page_count;
+  
+async function loadPublished(){
+  try{
+    const res = await fetch(withBase(PUBLISHED_URL), {cache:"no-store"});
+    if(!res.ok) throw new Error("no published");
+    const arr = await res.json();
+    publishedNotes = Array.isArray(arr) ? arr : [];
+    document.getElementById("pubStatus").textContent = `נטענו ${publishedNotes.length} הערות מהאתר`;
+  }catch(e){
+    publishedNotes = [];
+    document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
   }
-
-  async function loadPublished(){
-    try{
-      const res = await fetch(PUBLISHED_URL, {cache:"no-store"});
-      if(!res.ok) throw new Error("no published");
-      const arr = await res.json();
-      publishedNotes = Array.isArray(arr) ? arr : [];
-      document.getElementById("pubStatus").textContent = `נטענו ${publishedNotes.length} הערות מהאתר`;
-    }catch(e){
-      publishedNotes = [];
-      document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
-    }
-  }
+}
+ 
 
   function clearWords(){
     wordEls.forEach(el=>el.remove());
@@ -163,7 +167,8 @@
 
 
     const p = META.pages[currentPage-1];
-    img.src = p.img;
+ img.src = withBase(p.img);
+
 
     await new Promise(resolve=>{
       if(img.complete) return resolve();
@@ -171,7 +176,8 @@
       img.onerror=()=>resolve();
     });
 
-    const wordsRes = await fetch(p.words, {cache:"no-store"});
+    const wordsRes = await fetch(withBase(p.words), {cache:"no-store"});
+
     const payload = await wordsRes.json();
 
     clearWords();
