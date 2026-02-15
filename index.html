@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פוקח עורים — פירוש מילה בחלון צף</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="row">
+    <div>
+      <div class="title">פוקח עורים — הערות על מילה (Hover)</div>
+      <div class="hint">לחץ על מילה כדי להוסיף פירוש (רק במצב עריכה). לאחר מכן: העבר עכבר על המילה → חלון צף. להפצה ב‑GitHub Pages: לחץ “ייצא” והעלה את הקובץ בתור <code>annotations.json</code>. <span id="modeBadge" style="display:inline-block;padding:2px 8px;border-radius:999px;margin-right:8px;"></span> <span id="pubStatus" style="color:#666;font-size:12px;margin-right:8px;"></span> <span id="editHint" style="color:#666;font-size:12px;"></span></div>
+    </div>
+    <div class="controls">
+      <button id="btnPrev">הקודם</button>
+      <button id="btnNext">הבא</button>
+      <input id="pageInput" type="number" min="1" value="1" style="width:90px">
+      <button id="btnGo">קפוץ</button>
+      <button id="btnCopyLink">העתק קישור לעמוד</button>
+      <button id="btnNotes">הערות</button>
+      <button id="btnExport">ייצא</button>
+      <button id="btnImport">ייבא</button>
+      <button id="btnClear">נקה</button>
+      <input id="fileImport" type="file" accept="application/json" style="display:none">
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="viewer">
+    <div id="pageWrap">
+      <img id="pageImg" alt="עמוד">
+      <div id="tooltip"></div>
+    </div>
+  </div>
+</main>
+
+<div id="sidebar" aria-label="הערות">
+  <header>
+    <div style="font-weight:800">הערות</div>
+    <button id="btnCloseSidebar">סגור</button>
+  </header>
+  <main id="notesRoot"></main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
