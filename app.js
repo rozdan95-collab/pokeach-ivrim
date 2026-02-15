@@ -147,6 +147,7 @@ async function loadPublished(){
     document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
   }
 }
+
  
 
   function clearWords(){
