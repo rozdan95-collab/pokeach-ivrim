@@ -339,7 +339,7 @@ const base = existing || {id: newId, created_at: nowIso()};
       applyMarks(); renderSidebar();
     }
   });
-  // init
+// init
 (async ()=>{
   await loadMeta();
   await loadPublished();
