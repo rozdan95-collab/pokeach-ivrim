@@ -344,7 +344,7 @@ const base = existing || {id: newId, created_at: nowIso()};
     await loadMeta();
     await loadPublished();
 
-    // In read mode: hide import/clear buttons to reduce confusion
+      // In read mode: hide import/clear buttons to reduce confusion
     if(!EDIT_MODE){
       document.getElementById("editHint").textContent =
         "כדי לערוך הערות: הוסף ‎?edit=1‎ לכתובת (רק למנהל).";
@@ -363,7 +363,7 @@ const base = existing || {id: newId, created_at: nowIso()};
       if(p && p >= 1) initial = p;
     }catch(e){}
 
-
- 
+    await renderPage(initial);
   })();
 })();
+
