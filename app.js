@@ -130,7 +130,7 @@ const withBase = (p) => (p.startsWith('http') ? p : BASE + p.replace(/^\.?\//,''
   }
 
   async function loadMeta(){
-    const res = await fetch("meta.json", {cache:"no-store"});
+   const res = await fetch(withBase("meta.json"), {cache:"no-store"});
     META = await res.json();
     document.getElementById("pageCount").textContent = META.page_count;
     pageInput.max = META.page_count;
@@ -166,9 +166,10 @@ async function loadPublished(){
       history.replaceState(null, "", u.toString());
     }catch(e){}
 
+const p = META.pages[currentPage-1];
+img.src = withBase(p.img);
 
-    const p = META.pages[currentPage-1];
- img.src = withBase(p.img);
+    
 
 
     await new Promise(resolve=>{
@@ -223,7 +224,9 @@ async function loadPublished(){
             map.delete(key);
           }else{
             const existing = map.get(key);
-            const base = existing || {id: crypto.randomUUID(), created_at: nowIso()};
+          const newId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2));
+const base = existing || {id: newId, created_at: nowIso()};
+
             map.set(key, {
               ...base,
               page: currentPage,
