@@ -4,10 +4,17 @@
   const KEY="daniel_word_notes_draft_v1";   // local drafts
   const PUBLISHED_URL="annotations.json";   // committed to GitHub Pages
 
+  // Optional: per-page link to the original manuscript image in Google Drive.
+  // Add more entries like: 9: "https://drive.google.com/file/d/<ID>/view"
+  const ORIG_PAGE_LINKS = {
+    8: "https://drive.google.com/file/d/1JrFGXxge2S5-bZFhgnbTBiP4EoUKFR9E/view?usp=drive_link"
+  };
+
   const img=document.getElementById("pageImg");
   const wrap=document.getElementById("pageWrap");
   const tooltip=document.getElementById("tooltip");
   const pageNumEl=document.getElementById("pageNum");
+  const origLinkEl=document.getElementById("origLink");
   const pageInput=document.getElementById("pageInput");
   const btnGo=document.getElementById("btnGo");
   const btnCopyLink=document.getElementById("btnCopyLink");
@@ -146,7 +153,15 @@
     }
   }
 
-  function clearWords(){
+  
+  function updateOrigLink(page){
+    if(!origLinkEl) return;
+    const href = ORIG_PAGE_LINKS[page];
+    if(!href){ origLinkEl.textContent=""; return; }
+    origLinkEl.innerHTML = `<a href="${href}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
+  }
+
+function clearWords(){
     wordEls.forEach(el=>el.remove());
     wordEls=[];
   }
@@ -155,6 +170,7 @@
     currentPage = Math.max(1, Math.min(META.page_count, n));
     pageNumEl.textContent = currentPage;
     pageInput.value = currentPage;
+    updateOrigLink(currentPage);
     // keep ?page= in the address (without reload), preserve other params like edit=1
     try{
       const u = new URL(window.location.href);
