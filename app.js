@@ -137,8 +137,7 @@ const ORIG_PAGE_LINKS = {
       document.getElementById("pubStatus").textContent = "אין annotations.json (או לא נטען).";
     }
   }
-
-  function updateOrigLink(page){
+function updateOrigLink(page){
   if(!origLinkEl) return;
 
   const entry = ORIG_PAGE_LINKS[page];
@@ -147,7 +146,127 @@ const ORIG_PAGE_LINKS = {
     origLinkEl.textContent = "";
     return;
   }
+
+  // קישור יחיד (מחרוזת)
+  if(typeof entry === "string"){
+    origLinkEl.innerHTML =
+      `<a href="${entry}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
+    return;
+  }
+
+  // שני קישורים (ימין/שמאל)
+  const parts = [];
+  if(entry.right && entry.right.url){
+    parts.push(
+      `<a href="${entry.right.url}" target="_blank" rel="noopener">${entry.right.label || "צד ימין"}</a>`
+    );
+  }
+  if(entry.left && entry.left.url){
+    parts.push(
+      `<a href="${entry.left.url}" target="_blank" rel="noopener">${entry.left.label || "צד שמאל"}</a>`
+    );
+  }
+
+  origLinkEl.innerHTML = parts.join(" | ");
+}
+
+
+function clearWords(){
+  wordEls.forEach(el=>el.remove());
+  wordEls=[];
+}
+
+
 async function renderPage(n){
+  currentPage = Math.max(1, Math.min(META.page_count, n));
+  pageNumEl.textContent = currentPage;
+  pageInput.value = currentPage;
+
+  // 🔥 זה מה שמעדכן את הקישור למקור
+  updateOrigLink(currentPage);
+
+  // keep ?page= in the address (without reload), preserve other params like edit=1
+  try{
+    const u = new URL(window.location.href);
+    u.searchParams.set("page", String(currentPage));
+    history.replaceState(null, "", u.toString());
+  }catch(e){}
+
+  const p = META.pages[currentPage-1];
+  img.src = p.img;
+
+  await new Promise(resolve=>{
+    if(img.complete) return resolve();
+    img.onload=()=>resolve();
+    img.onerror=()=>resolve();
+  });
+
+  const wordsRes = await fetch(p.words, {cache:"no-store"});
+  const payload = await wordsRes.json();
+
+  clearWords();
+
+  const dispW = img.clientWidth;
+  const scale = dispW / payload.w;
+  wrap.style.width = dispW + "px";
+  wrap.style.height = (payload.h * scale) + "px";
+
+  payload.words.forEach((w, idx)=>{
+    const el=document.createElement("span");
+    el.className="word";
+    el.style.left = (w.x*scale) + "px";
+    el.style.top  = (w.y*scale) + "px";
+    el.style.width= (w.w*scale) + "px";
+    el.style.height=(w.h*scale) + "px";
+    el.dataset.idx = idx;
+    el.dataset.t = w.t;
+    wrap.appendChild(el);
+    wordEls.push(el);
+
+    el.addEventListener("mouseenter", (e)=>{
+      const note = getNote(currentPage, idx);
+      if(!note) return;
+      showTooltip(e.clientX, e.clientY, `עמוד ${note.page} — ${note.word}`, note.note);
+    });
+    el.addEventListener("mouseleave", hideTooltip);
+
+    if(EDIT_MODE){
+      el.addEventListener("click", ()=>{
+        const note = getNote(currentPage, idx);
+        const currentText = note ? note.note : "";
+        const input = prompt(`הוסף/ערוך פירוש למילה:\n"${w.t}"`, currentText);
+        if(input===null) return;
+        const txt = input.trim();
+
+        // update draft ONLY (published stays as baseline)
+        const draft = loadDraft();
+        const key = `${currentPage}:${idx}`;
+        const map = new Map(draft.map(n=>[`${n.page}:${n.word_index}`, n]));
+        if(!txt){
+          map.delete(key);
+        }else{
+          const existing = map.get(key);
+          const base = existing || {id: crypto.randomUUID(), created_at: nowIso()};
+          map.set(key, {
+            ...base,
+            page: currentPage,
+            word_index: idx,
+            word: w.t,
+            note: txt,
+            updated_at: nowIso()
+          });
+        }
+        saveDraft(Array.from(map.values()));
+        applyMarks();
+        renderSidebar();
+      });
+    }
+  });
+
+  applyMarks();
+  hideTooltip();
+}
+
   currentPage = Math.max(1, Math.min(META.page_count, n));
   pageNumEl.textContent = currentPage;
   pageInput.value = currentPage;
