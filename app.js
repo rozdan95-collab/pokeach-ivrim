@@ -8,26 +8,9 @@
   // Optional: per-page link to the original manuscript image in Google Drive.
   // Add more entries like: 9: "https://drive.google.com/file/d/<ID>/view"
 const ORIG_PAGE_LINKS = {
-  // דוגמה שכבר עשינו (עמוד 8): קישור יחיד
-  8: "https://drive.google.com/file/d/1JrFGXxge2S5-bZFhgnbTBiP4EoUKFR9E/view?usp=drive_link",
-
-  // עמוד 9: קובץ “כפול” (ימין = דף 1 עמ’ ב, שמאל = דף 2 עמ’ א)
-  9: {
-    right: { label: "דף 1 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link" },
-    left:  { label: "דף 2 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link" }
-  },
-
-  // עמוד 10
-  10: {
-    right: { label: "דף 2 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link" },
-    left:  { label: "דף 3 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link" }
-  },
-
-  // עמוד 11
-  11: {
-    right: { label: "דף 3 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link" },
-    left:  { label: "דף 4 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link" }
-  }
+  9: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link",
+  10: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link",
+  11: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link"
 };
 
 
