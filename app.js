@@ -8,7 +8,7 @@
   // Optional: per-page link to the original manuscript image in Google Drive.
   // Add more entries like: 9: "https://drive.google.com/file/d/<ID>/view"
 const ORIG_PAGE_LINKS = {
-  9: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link",
+  9:  "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link",
   10: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link",
   11: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link"
 };
@@ -138,8 +138,7 @@ const ORIG_PAGE_LINKS = {
     }
   }
 
-  
-function updateOrigLink(page){
+  function updateOrigLink(page){
   if(!origLinkEl) return;
 
   const entry = ORIG_PAGE_LINKS[page];
@@ -149,23 +148,25 @@ function updateOrigLink(page){
     return;
   }
 
-  // אם זה קישור יחיד (מחרוזת)
+  // קישור יחיד (מחרוזת)
   if(typeof entry === "string"){
-    origLinkEl.innerHTML = `<a href="${entry}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
+    origLinkEl.innerHTML =
+      `<a href="${entry}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
     return;
   }
 
-  // אם זה אובייקט עם right/left
+  // שני קישורים (ימין/שמאל)
   const parts = [];
-  if(entry.right?.url){
+  if(entry.right && entry.right.url){
     parts.push(`<a href="${entry.right.url}" target="_blank" rel="noopener">${entry.right.label || "צד ימין"}</a>`);
   }
-  if(entry.left?.url){
+  if(entry.left && entry.left.url){
     parts.push(`<a href="${entry.left.url}" target="_blank" rel="noopener">${entry.left.label || "צד שמאל"}</a>`);
   }
 
   origLinkEl.innerHTML = parts.join(" | ");
 }
+
 
 
     const p = META.pages[currentPage-1];
