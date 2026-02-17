@@ -7,28 +7,29 @@
 
   // Optional: per-page link to the original manuscript image in Google Drive.
   // Add more entries like: 9: "https://drive.google.com/file/d/<ID>/view"
-  const ORIG_PAGE_LINKS = {
-    8: "https://drive.google.com/file/d/1JrFGXxge2S5-bZFhgnbTBiP4EoUKFR9E/view?usp=drive_link"
-  };
+const ORIG_PAGE_LINKS = {
+  // דוגמה שכבר עשינו (עמוד 8): קישור יחיד
+  8: "https://drive.google.com/file/d/1JrFGXxge2S5-bZFhgnbTBiP4EoUKFR9E/view?usp=drive_link",
 
-  const img=document.getElementById("pageImg");
-  const wrap=document.getElementById("pageWrap");
-  const tooltip=document.getElementById("tooltip");
-  const pageNumEl=document.getElementById("pageNum");
-  const origLinkEl=document.getElementById("origLink");
-  const pageInput=document.getElementById("pageInput");
-  const btnGo=document.getElementById("btnGo");
-  const btnCopyLink=document.getElementById("btnCopyLink");
-  const btnPrev=document.getElementById("btnPrev");
-  const btnNext=document.getElementById("btnNext");
-  const btnNotes=document.getElementById("btnNotes");
-  const btnExport=document.getElementById("btnExport");
-  const btnImport=document.getElementById("btnImport");
-  const fileImport=document.getElementById("fileImport");
-  const btnClearDraft=document.getElementById("btnClear");
-  const sidebar=document.getElementById("sidebar");
-  const notesRoot=document.getElementById("notesRoot");
-  const btnCloseSidebar=document.getElementById("btnCloseSidebar");
+  // עמוד 9: קובץ “כפול” (ימין = דף 1 עמ’ ב, שמאל = דף 2 עמ’ א)
+  9: {
+    right: { label: "דף 1 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link" },
+    left:  { label: "דף 2 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/142isFumVOfZTfbxn3T_OPUwwaR14sRf_/view?usp=drive_link" }
+  },
+
+  // עמוד 10
+  10: {
+    right: { label: "דף 2 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link" },
+    left:  { label: "דף 3 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/12pUO1w3myD96uPuYGtFyms3h6oaS51Ff/view?usp=drive_link" }
+  },
+
+  // עמוד 11
+  11: {
+    right: { label: "דף 3 עמ׳ ב (צד ימין)", url: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link" },
+    left:  { label: "דף 4 עמ׳ א (צד שמאל)", url: "https://drive.google.com/file/d/1hu-tw88jWd_mflV_jsX1Nt6wlSr4Re4i/view?usp=drive_link" }
+  }
+};
+
 
   const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const nowIso=()=>new Date().toISOString();
@@ -155,29 +156,33 @@
   }
 
   
-  function updateOrigLink(page){
-    if(!origLinkEl) return;
-    const href = ORIG_PAGE_LINKS[page];
-    if(!href){ origLinkEl.textContent=""; return; }
-    origLinkEl.innerHTML = `<a href="${href}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
+function updateOrigLink(page){
+  if(!origLinkEl) return;
+
+  const entry = ORIG_PAGE_LINKS[page];
+
+  if(!entry){
+    origLinkEl.textContent = "";
+    return;
   }
 
-function clearWords(){
-    wordEls.forEach(el=>el.remove());
-    wordEls=[];
+  // אם זה קישור יחיד (מחרוזת)
+  if(typeof entry === "string"){
+    origLinkEl.innerHTML = `<a href="${entry}" target="_blank" rel="noopener">לחץ כאן לדף המקורי</a>`;
+    return;
   }
 
-  async function renderPage(n){
-    currentPage = Math.max(1, Math.min(META.page_count, n));
-    pageNumEl.textContent = currentPage;
-    pageInput.value = currentPage;
-    updateOrigLink(currentPage);
-    // keep ?page= in the address (without reload), preserve other params like edit=1
-    try{
-      const u = new URL(window.location.href);
-      u.searchParams.set("page", String(currentPage));
-      history.replaceState(null, "", u.toString());
-    }catch(e){}
+  // אם זה אובייקט עם right/left
+  const parts = [];
+  if(entry.right?.url){
+    parts.push(`<a href="${entry.right.url}" target="_blank" rel="noopener">${entry.right.label || "צד ימין"}</a>`);
+  }
+  if(entry.left?.url){
+    parts.push(`<a href="${entry.left.url}" target="_blank" rel="noopener">${entry.left.label || "צד שמאל"}</a>`);
+  }
+
+  origLinkEl.innerHTML = parts.join(" | ");
+}
 
 
     const p = META.pages[currentPage-1];
