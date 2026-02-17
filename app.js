@@ -147,6 +147,19 @@ const ORIG_PAGE_LINKS = {
     origLinkEl.textContent = "";
     return;
   }
+async function renderPage(n){
+  currentPage = Math.max(1, Math.min(META.page_count, n));
+  pageNumEl.textContent = currentPage;
+  pageInput.value = currentPage;
+  updateOrigLink(currentPage);
+
+  // keep ?page= in the address (without reload), preserve other params like edit=1
+  try{
+    const u = new URL(window.location.href);
+    u.searchParams.set("page", String(currentPage));
+    history.replaceState(null, "", u.toString());
+  }catch(e){}
+
 
   // קישור יחיד (מחרוזת)
   if(typeof entry === "string"){
